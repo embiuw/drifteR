@@ -22,8 +22,8 @@ pDrift(data = dive, depth.wpar = c(100, 30), plotit = F, keep.all = T)
 \code{pDrift} Drift rate and weight calculations
 }
 \details{
-Takes a dive set of dive data from SRDLs (Sea Mammal Research Unit), and calculates 
-drift rate based on segment between first two extracted inflection points, along with 
+Takes a dive set of dive data from SRDLs (Sea Mammal Research Unit), and calculates
+drift rate based on segment between first two extracted inflection points, along with
 probability weights for each dive being a drift dive.
 }
 \examples{
