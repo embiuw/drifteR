@@ -97,7 +97,7 @@ fitDrate <- function(data, weight='default', prefilter=0) {
     logitp=0
   )
 
-  obj <- MakeADFun(dat,parameters,random="u",DLL="rwDrate")
+  obj <- MakeADFun(dat,parameters,random="u",DLL="drifteR")
 
   opt<-nlminb(obj$par,obj$fn,obj$gr)
 
