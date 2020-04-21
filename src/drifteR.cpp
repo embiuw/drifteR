@@ -1,3 +1,4 @@
+#define TMB_LIB_INIT R_init_drifteR
 #include <TMB.hpp>
 
 template <class Type>
