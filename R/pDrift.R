@@ -19,7 +19,7 @@
 #' @family Drift dive functions
 #' @seealso \code{\link{rbs}} Reverse Broken Stick algorithm
 #' @seealso \code{\link{check.pDrift}} to interactively check drift dive weightings
-#' @seealso \code{\link{fitDrift}} To fit state-space model to weighted data to estimate drift rate change over time
+#' @seealso \code{\link{fitDrate}} To fit state-space model to weighted data to estimate drift rate change over time
 #' @seealso \code{\link{fitPlot}} To plot output from \code{fitDrift}
 #' @author Martin Biuw
 #' @examples
@@ -201,7 +201,7 @@ pDrift <- function(data=dive, depth.wpar=c(100, 30), plotit=F, keep.all=T) {
 #' @seealso \code{\link{rbs}} Reverse Broken Stick algorithm
 #' @seealso \code{\link{pDrift}} to calculate drift rate and probability weightings for drift dive detection
 #' @seealso \code{\link{fitDrift}} To fit state-space model to weighted data to estimate drift rate change over time
-#' @seealso \code{\link{fitPlot}} To plot output from \code{fitDrift}
+#' @seealso \code{\link{fitPlot}} To plot output from \code{fitDrate}
 #' @author Martin Biuw
 #' @examples
 #' rbs(data=dive, num=100, n.bs=4)

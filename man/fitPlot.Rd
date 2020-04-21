@@ -52,7 +52,7 @@ fitPlot(fit2, add=T, fitCol=3)
 
 \code{\link{pDrift}} to calculate drift rate and probability weightings for drift dive detection
 
-\code{\link{fitDrift}} To fit state-space model to weighted data to estimate drift rate change over time
+\code{\link{fitDrate}} To fit state-space model to weighted data to estimate drift rate change over time
 
 Other Drift dive functions: 
 \code{\link{check.pDrift}()},

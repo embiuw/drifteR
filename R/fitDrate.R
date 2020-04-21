@@ -1,9 +1,9 @@
-#' \code{fitDrate} Fit state-space model to weighted drift dive record 
+#' \code{fitDrate} Fit state-space model to weighted drift dive record
 #' @param data Data frame with dive data output from the \code{pDrift} function.
 #' @param weight Select weightingbvariables to be used. Default is to use \code{weight} created by \code{pDrift}.
 #' See example for how to specify other weighting
-#' @param prefilter Should any prefiltering be done (based on selected weight) prior to running the model. 
-#' @details Takes a dive set of dive data from SRDLs (Sea Mammal Research Unit), with added variables from 
+#' @param prefilter Should any prefiltering be done (based on selected weight) prior to running the model.
+#' @details Takes a dive set of dive data from SRDLs (Sea Mammal Research Unit), with added variables from
 #' \code{rbs} and \code{pDrift} and fits a state-space model to change over time (using TMB).
 #' @return A list with several objects from fit:
 #' \item{\code{data}}{Original input data}
@@ -11,10 +11,10 @@
 #' \item{\code{tSeq}}{Regular time series (e.g. whole days) where predictions are obtained}
 #' \item{\code{obj}}{TMB object}
 #' \item{\code{opt}}{TMB optimization}
-#' \item{\code{par}}{Fitted parameters} 
+#' \item{\code{par}}{Fitted parameters}
 #' \item{\code{rep}}{TMB report}
-#' \item{\code{allsd}}{Standard deviation of fitted values} 
-#' \item{\code{plsd}}{Fitted values} 
+#' \item{\code{allsd}}{Standard deviation of fitted values}
+#' \item{\code{plsd}}{Fitted values}
 #' @family Drift dive functions
 #' @seealso \code{\link{rbs}} Reverse Broken Stick algorithm
 #' @seealso \code{\link{check.pDrift}} to interactively check drift dive weightings
@@ -31,9 +31,9 @@
 
 fitDrate <- function(data, weight='default', prefilter=0) {
   require(TMB)
-  compile("drifteR.cpp")
-  dyn.load(dynlib("drifteR"))
-  
+##  compile("drifteR.cpp")
+##  dyn.load(dynlib("drifteR"))
+
   if(weight=='default') {
     data$wt <- data$weight
   } else {
@@ -42,32 +42,32 @@ fitDrate <- function(data, weight='default', prefilter=0) {
     eval(parse(text=paste0('data$wt <- ', wt.vars)))
     data$wt <- data$wt/max(data$wt, na.rm=T)
   }
-  
+
   data <- data[which(!is.na(data$DE.DATE) & !is.na(data$wt)),]
   data <- data[order(data$DE.DATE),]
   data <- data[which(is.finite(data$drate)),]
-  
-  
+
+
   if(!is.na(prefilter)) data <- data[which(data$wt>prefilter),]
-  
+
   ## Time regularization:
   ## Create vector of whole sequential days:
 
   Date <- as.POSIXct(strptime(format(data$DE.DATE, '%Y-%m-%d'), '%Y-%m-%d'), tz='GMT')
   tSeq <- seq(min(Date)-43200, max(Date)+(86400+43200), by='days')
-  
+
   ## Find which whole day a particular observation falls within:
   tIDX <- unlist(lapply(data$DE.DATE, function(x) which(tSeq>=x)[1]))
-  
+
   ## Time difference between time of observation and the next whole day:
   j <- as.numeric(difftime(tSeq[tIDX], data$DE.DATE, units='secs'))/86400
-  
+
   w <- data$wt/max(data$wt)
-  
+
   dat <- list(slope=data$drate, idx=tIDX, j=j, w=w)
-  
+
   if(dat$idx[1]>1) dat$idx <- dat$idx-(dat$idx[1]-1)
-  
+
   newdat <- list(slope=dat$slope[1], idx=dat$idx[1], j=dat$j[1], w=dat$w[1])
   for(i in c(2:length(dat$slope))) {
     if(dat$idx[i]> newdat$idx[length(newdat$idx)]+1) {
@@ -82,13 +82,13 @@ fitDrate <- function(data, weight='default', prefilter=0) {
       newdat$j <- c(newdat$j, dat$j[i])
       newdat$w <- c(newdat$w, dat$w[i])
     }
-  }	
-  
+  }
+
   dat <- newdat
   ##data$u0 <- data$slope[head(which(data$w>0.3), 1)]
   ##data$w <- rep(1, length(data$w))
   rm(newdat)
-  
+
   parameters <- list(
     logSdProc=0,
     logSdObs=0,
@@ -96,11 +96,11 @@ fitDrate <- function(data, weight='default', prefilter=0) {
     u=rep(0,length(tSeq)),
     logitp=0
   )
-  
+
   obj <- MakeADFun(dat,parameters,random="u",DLL="rwDrate")
-  
+
   opt<-nlminb(obj$par,obj$fn,obj$gr)
-  
+
   pl <- try(obj$env$parList(), silent=T)
   rep<-try(sdreport(obj, getJointPrecision=TRUE), silent=T)
   allsd<-try(sqrt(diag(solve(rep$jointPrecision))), silent=T)
@@ -108,8 +108,8 @@ fitDrate <- function(data, weight='default', prefilter=0) {
     plsd <- obj$env$parList(par=allsd)
   } else {
     plsd <- allsd
-  }	
-  
+  }
+
   list(data=data, w=data$wt, tSeq=tSeq, obj=obj, opt=opt, par=pl, rep=rep, allsd=allsd, plsd=plsd)
 }
 
@@ -126,7 +126,7 @@ fitDrate <- function(data, weight='default', prefilter=0) {
 #' @seealso \code{\link{rbs}} Reverse Broken Stick algorithm
 #' @seealso \code{\link{check.pDrift}} to interactively check drift dive weightings
 #' @seealso \code{\link{pDrift}} to calculate drift rate and probability weightings for drift dive detection
-#' @seealso \code{\link{fitDrift}} To fit state-space model to weighted data to estimate drift rate change over time
+#' @seealso \code{\link{fitDrate}} To fit state-space model to weighted data to estimate drift rate change over time
 #' @author Martin Biuw
 #' @examples
 #' rbs(data=dive, num=100, n.bs=4)
@@ -141,20 +141,20 @@ fitDrate <- function(data, weight='default', prefilter=0) {
 
 fitPlot <- function(fit, yLims=c(-0.5, 0.2),
                     fitCol=2, fitAlpha=0.2, add=F, fitLwd=1,
-                    ptMag=2, ptAlpha=1) { 
+                    ptMag=2, ptAlpha=1) {
   if(add==F) {
-    plot(drate~DE.DATE, data=fit$data, pch=19, col=rgb(0,0,0,ptAlpha*fit$w), 
+    plot(drate~DE.DATE, data=fit$data, pch=19, col=rgb(0,0,0,ptAlpha*fit$w),
          cex=ptMag*fit$w, ylim=yLims)
-  }  
+  }
   confCol <- as.vector(col2rgb(fitCol))/255
   confCol <- rgb(confCol[1], confCol[2], confCol[3], fitAlpha)
   if(class(fit$plsd) != 'try-error') {
-    polygon(c(fit$tSeq, rev(fit$tSeq)), c(fit$par$u+(2*fit$plsd$u), rev(fit$par$u-(2*fit$plsd$u))), 
+    polygon(c(fit$tSeq, rev(fit$tSeq)), c(fit$par$u+(2*fit$plsd$u), rev(fit$par$u-(2*fit$plsd$u))),
             col=confCol, border=F)
   }
   if(class(fit$par) != 'try-error') {
     lines(fit$tSeq, fit$par$u, lwd=fitLwd, col=fitCol)
-  }	
+  }
   abline(h=0, lty=2, col=rgb(0,0,0,0.3))
 }
 

@@ -21,16 +21,16 @@ A list with several objects from fit:
 \item{\code{tSeq}}{Regular time series (e.g. whole days) where predictions are obtained}
 \item{\code{obj}}{TMB object}
 \item{\code{opt}}{TMB optimization}
-\item{\code{par}}{Fitted parameters} 
+\item{\code{par}}{Fitted parameters}
 \item{\code{rep}}{TMB report}
-\item{\code{allsd}}{Standard deviation of fitted values} 
+\item{\code{allsd}}{Standard deviation of fitted values}
 \item{\code{plsd}}{Fitted values}
 }
 \description{
 \code{fitDrate} Fit state-space model to weighted drift dive record
 }
 \details{
-Takes a dive set of dive data from SRDLs (Sea Mammal Research Unit), with added variables from 
+Takes a dive set of dive data from SRDLs (Sea Mammal Research Unit), with added variables from
 \code{rbs} and \code{pDrift} and fits a state-space model to change over time (using TMB).
 }
 \examples{

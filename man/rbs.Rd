@@ -18,10 +18,10 @@ rbs(data = dive, num = 100, n.bs = 4)
 }
 \details{
 Takes a standard dive set of dive data from SRDLs (Sea Mammal Research Unit),
-and returns three new variables: 
+and returns three new variables:
 \code{order}: Character, order in which inflction points were extracted
 \code{max.res}: Numeric, maximum remaining residual (in meters) unaccounted for by summarized dive profile
-\code{reordered}: Logical, if dive was reorganized from inconsistent ordering in original file    
+\code{reordered}: Logical, if dive was reorganized from inconsistent ordering in original file
 NOTE! Names in the data frame sould have underscores replaced by dots prior to running this function!
 }
 \examples{
@@ -34,9 +34,9 @@ dive <- rbs(data=dive, num=NA, n.bs=4)
 
 \code{\link{check.pDrift}} to interactively check drift dive weightings
 
-\code{\link{fitDrift}} To fit state-space model to weighted data to estimate drift rate change over time
+\code{\link{fitDrate}} To fit state-space model to weighted data to estimate drift rate change over time
 
-\code{\link{fitPlot}} To plot output from \code{fitDrift}
+\code{\link{fitPlot}} To plot output from \code{fitDrate}
 
 Other Drift dive functions: 
 \code{\link{check.pDrift}()},

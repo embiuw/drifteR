@@ -34,7 +34,7 @@ check.pDrift(dive)
 
 \code{\link{fitDrift}} To fit state-space model to weighted data to estimate drift rate change over time
 
-\code{\link{fitPlot}} To plot output from \code{fitDrift}
+\code{\link{fitPlot}} To plot output from \code{fitDrate}
 
 Other Drift dive functions: 
 \code{\link{fitDrate}()},
