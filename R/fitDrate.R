@@ -31,8 +31,8 @@
 
 fitDrate <- function(data, weight='default', prefilter=0) {
   require(TMB)
-##  compile("drifteR.cpp")
-##  dyn.load(dynlib("drifteR"))
+  ##compile("./src/drifteR.cpp")
+  ##dyn.load(dynlib("drifteR"))
 
   if(weight=='default') {
     data$wt <- data$weight

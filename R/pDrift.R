@@ -48,28 +48,42 @@ pDrift <- function(data=dive, depth.wpar=c(100, 30), plotit=F, keep.all=T) {
 
   d2 <- d1 <- pr2 <- pr1 <- rep(NA, nrow(sub))
 
+
   ## Calculate time proportions for the two ifp's:
+  for(i in 1:length(unlist(strsplit(dat$order[1], '.', fixed=T)))) {
+    eval(parse(text=paste0('pr1[which(ifp1=="', i,
+                           '")] <- sub$T', i, '[which(ifp1=="', i, '")]/100')))
+    eval(parse(text=paste0('pr2[which(ifp2=="', i,
+                           '")] <- sub$T', i, '[which(ifp2=="', i, '")]/100')))
 
-  pr1[which(ifp1=='1')] <- sub$T1[which(ifp1=='1')]/100
-  pr1[which(ifp1=='2')] <- sub$T2[which(ifp1=='2')]/100
-  pr1[which(ifp1=='3')] <- sub$T3[which(ifp1=='3')]/100
-  pr1[which(ifp1=='4')] <- sub$T4[which(ifp1=='4')]/100
+    eval(parse(text=paste0('d1[which(ifp1=="', i,
+                           '")] <- sub$D', i, '[which(ifp1=="', i, '")]/100')))
 
-  pr2[which(ifp2=='1')] <- sub$T1[which(ifp2=='1')]/100
-  pr2[which(ifp2=='2')] <- sub$T2[which(ifp2=='2')]/100
-  pr2[which(ifp2=='3')] <- sub$T3[which(ifp2=='3')]/100
-  pr2[which(ifp2=='4')] <- sub$T4[which(ifp2=='4')]/100
+    eval(parse(text=paste0('d2[which(ifp2=="', i,
+                           '")] <- sub$D', i, '[which(ifp2=="', i, '")]/100')))
 
-  ## Extract corresponding depths for the two ifp's:
-  d1[which(ifp1=='1')] <- sub$D1[which(ifp1=='1')]
-  d1[which(ifp1=='2')] <- sub$D2[which(ifp1=='2')]
-  d1[which(ifp1=='3')] <- sub$D3[which(ifp1=='3')]
-  d1[which(ifp1=='4')] <- sub$D4[which(ifp1=='4')]
+  }
 
-  d2[which(ifp2=='1')] <- sub$D1[which(ifp2=='1')]
-  d2[which(ifp2=='2')] <- sub$D2[which(ifp2=='2')]
-  d2[which(ifp2=='3')] <- sub$D3[which(ifp2=='3')]
-  d2[which(ifp2=='4')] <- sub$D4[which(ifp2=='4')]
+  # pr1[which(ifp1=='1')] <- sub$T1[which(ifp1=='1')]/100
+  # pr1[which(ifp1=='2')] <- sub$T2[which(ifp1=='2')]/100
+  # pr1[which(ifp1=='3')] <- sub$T3[which(ifp1=='3')]/100
+  # pr1[which(ifp1=='4')] <- sub$T4[which(ifp1=='4')]/100
+  #
+  # pr2[which(ifp2=='1')] <- sub$T1[which(ifp2=='1')]/100
+  # pr2[which(ifp2=='2')] <- sub$T2[which(ifp2=='2')]/100
+  # pr2[which(ifp2=='3')] <- sub$T3[which(ifp2=='3')]/100
+  # pr2[which(ifp2=='4')] <- sub$T4[which(ifp2=='4')]/100
+  #
+  # ## Extract corresponding depths for the two ifp's:
+  # d1[which(ifp1=='1')] <- sub$D1[which(ifp1=='1')]
+  # d1[which(ifp1=='2')] <- sub$D2[which(ifp1=='2')]
+  # d1[which(ifp1=='3')] <- sub$D3[which(ifp1=='3')]
+  # d1[which(ifp1=='4')] <- sub$D4[which(ifp1=='4')]
+  #
+  # d2[which(ifp2=='1')] <- sub$D1[which(ifp2=='1')]
+  # d2[which(ifp2=='2')] <- sub$D2[which(ifp2=='2')]
+  # d2[which(ifp2=='3')] <- sub$D3[which(ifp2=='3')]
+  # d2[which(ifp2=='4')] <- sub$D4[which(ifp2=='4')]
 
   ## Determine direction of putative drifts:
   direction <- ifelse(pr1>pr2, 'down', 'up')
@@ -135,7 +149,7 @@ pDrift <- function(data=dive, depth.wpar=c(100, 30), plotit=F, keep.all=T) {
   ## This uses a half gaussian down to depth threshold, specified in depth.par[1],
   ## with a standard deviation specified in depth.par[2]
 
-  dWt <- rep(0, length(sub))
+  dWt <- rep(0, nrow(sub))
   dWt[which(direction=='down' | direction=='flat')] <- dnorm(d1[which(direction=='down' | direction=='flat')],
                                         depth.wpar[1], depth.wpar[2])/dnorm(depth.wpar[1], depth.wpar[1], depth.wpar[2])
   dWt[which(direction=='up')] <- dnorm(d2[which(direction=='up')],
