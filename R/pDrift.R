@@ -57,10 +57,10 @@ pDrift <- function(data=dive, depth.wpar=c(100, 30), plotit=F, keep.all=T) {
                            '")] <- sub$T', i, '[which(ifp2=="', i, '")]/100')))
 
     eval(parse(text=paste0('d1[which(ifp1=="', i,
-                           '")] <- sub$D', i, '[which(ifp1=="', i, '")]/100')))
+                           '")] <- sub$D', i, '[which(ifp1=="', i, '")]')))
 
     eval(parse(text=paste0('d2[which(ifp2=="', i,
-                           '")] <- sub$D', i, '[which(ifp2=="', i, '")]/100')))
+                           '")] <- sub$D', i, '[which(ifp2=="', i, '")]')))
 
   }
 
