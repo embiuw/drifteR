@@ -1,7 +1,8 @@
 tfClassifier <- function(data) {
   require(keras)
   model <- load_model_hdf5('diveClassTF.h5')
-  dat <- strip.last(data)
+
+  if(dat$N.DEPTHS==5) dat <- strip.last(data)
 
   dat <- standardise.dive(dat)
   attr(dat, 'dimnames') <- NULL

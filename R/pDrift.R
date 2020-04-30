@@ -50,7 +50,7 @@ pDrift <- function(data=dive, depth.wpar=c(100, 30), plotit=F, keep.all=T) {
 
 
   ## Calculate time proportions for the two ifp's:
-  for(i in 1:length(unlist(strsplit(dat$order[1], '.', fixed=T)))) {
+  for(i in 1:length(unlist(strsplit(sub$order[1], '.', fixed=T)))) {
     eval(parse(text=paste0('pr1[which(ifp1=="', i,
                            '")] <- sub$T', i, '[which(ifp1=="', i, '")]/100')))
     eval(parse(text=paste0('pr2[which(ifp2=="', i,
