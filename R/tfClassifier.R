@@ -4,7 +4,7 @@ tfClassifier <- function(data) {
   mod.nam <- system.file("extdata", "diveClassTF.h5", package = "drifteR", mustWork = TRUE)
   model <- load_model_hdf5(mod.nam)
 
-  if(dat$N.DEPTHS==5) dat <- strip.last(data)
+  if(data$N.DEPTHS==5) dat <- strip.last(data)
 
   dat <- standardise.dive(dat)
   attr(dat, 'dimnames') <- NULL
