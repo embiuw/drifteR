@@ -38,10 +38,11 @@ fitDrate <- function(data, weight='default', prefilter=0) {
   if(weight=='default') {
     data$wt <- data$weight
   } else {
-    wt.vars <- unlist(strsplit(weight, '*', fixed=T))
-    wt.vars <- paste(paste0('data$', wt.vars), collapse='*')
-    eval(parse(text=paste0('data$wt <- ', wt.vars)))
-    data$wt <- data$wt/max(data$wt, na.rm=T)
+    nmatch <- unlist(lapply(weight, function(x) grep(x, names(data))))
+    wmat <- data[,nmatch]
+    w <- apply(wmat, 1, prod)
+    w <- w/max(w, na.rm=T)
+    data$wt <- w
   }
 
   data <- data[which(!is.na(data$DE.DATE) & !is.na(data$wt)),]
@@ -63,8 +64,8 @@ fitDrate <- function(data, weight='default', prefilter=0) {
   ## Time difference between time of observation and the next whole day:
   j <- as.numeric(difftime(tSeq[tIDX], data$DE.DATE, units='secs'))/86400
 
-  w <- data$wt/max(data$wt)
-
+  ##w <- data$wt/max(data$wt)
+  w <- data$wt
   dat <- list(slope=data$drate, idx=tIDX, j=j, w=w)
 
   if(dat$idx[1]>1) dat$idx <- dat$idx-(dat$idx[1]-1)
