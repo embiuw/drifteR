@@ -15,6 +15,7 @@
 #' \item{\code{rep}}{TMB report}
 #' \item{\code{allsd}}{Standard deviation of fitted values}
 #' \item{\code{plsd}}{Fitted values}
+#' \item{\code{pred}}{Data frame with regular time sequence, fitted falues, sd of the fit and lower and upper 95% confidence intervals}
 #' @family Drift dive functions
 #' @seealso \code{\link{rbs}} Reverse Broken Stick algorithm
 #' @seealso \code{\link{check.pDrift}} to interactively check drift dive weightings
@@ -109,8 +110,28 @@ fitDrate <- function(data, weight='default', prefilter=0) {
   } else {
     plsd <- allsd
   }
+  pred <- data.frame(DE.DATE=tSeq, fit=pl$u, sd.fit=plsd$u)
+  pred$sd.fit[which(is.nan(pred$sd.fit))] <- NA
+  pred$lwr <- pred$fit-(2*pred$sd.fit)
+  pred$upr <- pred$fit+(2*pred$sd.fit)
 
-  list(data=data, w=data$wt, tSeq=tSeq, obj=obj, opt=opt, par=pl, rep=rep, allsd=allsd, plsd=plsd)
+  if(any(is.na(pred$sd.fit))) {
+    pred$segment <- rep(NA, nrow(pred))
+    seg <- 1
+    if(!is.na(pred$sd.fit[1])) pred$segment[1] <- seg
+    for(i in 2:nrow(pred)) {
+      if(!is.na(pred$sd.fit[i])) {
+        if(is.na(pred$sd.fit[i-1])) seg <- seg+1
+        pred$segment[i] <- seg
+      }
+    }
+    if(min(pred$segment, na.rm=T)>1) pred$segment <- pred$segment - min(pred$segment, na.rm=T) + 1
+  } else {
+    pred$segment <- rep(1, nrow(pred))
+  }
+
+  list(data=data, w=data$wt, tSeq=tSeq, obj=obj, opt=opt, par=pl,
+       rep=rep, allsd=allsd, plsd=plsd, pred=pred)
 }
 
 #' \code{fitPlot} Plot output from \code{fitDrift}
@@ -148,13 +169,17 @@ fitPlot <- function(fit, yLims=c(-0.5, 0.2),
   }
   confCol <- as.vector(col2rgb(fitCol))/255
   confCol <- rgb(confCol[1], confCol[2], confCol[3], fitAlpha)
-  if(class(fit$plsd) != 'try-error') {
-    polygon(c(fit$tSeq, rev(fit$tSeq)), c(fit$par$u+(2*fit$plsd$u), rev(fit$par$u-(2*fit$plsd$u))),
-            col=confCol, border=F)
+
+  for(i in unique(fit$pred$segment)) {
+    tmp <- fit$pred[which(fit$pred$segment==i),]
+    if(nrow(tmp)==1) {
+      segments(tmp$DE.DATE, tmp$lwr, tmp$DE.DATE, tmp$upr, col=confCol)
+      lines(fit~DE.DATE, data=tmp, col=fitCol, lwd=fitLwd)
+    } else {
+      polygon(c(tmp$DE.DATE, rev(tmp$DE.DATE)), c(tmp$lwr, rev(tmp$upr)), col=confCol, border=F)
+      lines(fit~DE.DATE, data=tmp, col=fitCol, lwd=fitLwd)
+    }
   }
-  if(class(fit$par) != 'try-error') {
-    lines(fit$tSeq, fit$par$u, lwd=fitLwd, col=fitCol)
-  }
-  abline(h=0, lty=2, col=rgb(0,0,0,0.3))
+  lines(fit~DE.DATE, data=fit$pred, lty=2, col=fitCol, lwd=1)
 }
 
