@@ -22,7 +22,7 @@
 
 rbs <- function(data=dive, num=NA, n.bs=NA) {
   if(is.na(n.bs)) {
-    n.bs <- dive$N.DEPTHS[1]
+    n.bs <- data$N.DEPTHS[1]
   }
   rbfun <- function(plotit=T) {
     d <- as.numeric(data[num, match(paste0('D', c(1:n.bs)), names(data))])
