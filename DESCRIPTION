@@ -10,4 +10,5 @@ Encoding: UTF-8
 LazyData: true
 Depends: TMB, RcppEigen
 LinkingTo: TMB, RcppEigen
+Suggests: keras, tensorflow
 RoxygenNote: 7.1.0

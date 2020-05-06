@@ -1,3 +1,5 @@
+#' @export
+
 strip.last <- function(dat=hp6) {
   ## Must have run 'rbs' first!
   orig.names <- c(paste0('T', c(1:5)), paste0('D', c(1:5)))

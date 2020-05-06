@@ -214,7 +214,7 @@ fitPlot <- function(fit, yLims=c(-0.5, 0.2),
 #' potGG(fit)
 #' @export
 
-plotGG <- function(fit, yLims=c(-0.5, 0.2),
+plotGG <- function(fit, yLims=c(-0.5, 0.2), weight='weight',
                     fitCol=2, fitAlpha=0.2, fitLwd=0.5,
                     ptSize=c(0.5, 3), to.plotly=F) {
   require(ggplot2)
@@ -224,7 +224,7 @@ plotGG <- function(fit, yLims=c(-0.5, 0.2),
     dat$w <- fit$w
   } else {
     dat <- fit
-    dat$w <- dat$weight
+    dat$w <- dat[,match(weight, names(dat))]
   }
 
   dp <- ggplot(dat, aes(x=DE.DATE, y=drate, size=w, alpha=w)) +

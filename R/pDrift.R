@@ -240,3 +240,23 @@ check.pDrift <- function(data, ptMag=2) {
              '\nweight=',round(data$weight[id], 2)))
 }
 
+
+
+plot.Drift <- function(data=dive, weight='default', exponent=1) {
+  require(ggplot2)
+  require(dplyr)
+  if(weight=='default') {
+    data$w <- data$weight
+  } else {
+    nmatch <- unlist(lapply(weight, function(x) grep(x, names(data))))
+    wmat <- data[,nmatch]
+    w <- apply(wmat, 1, prod)
+    w <- w/max(w, na.rm=T)
+    w <- w^exponent
+    data$w <- w
+  }
+  data %>% ggplot(aes(x=DE.DATE, y=drate, size=w, alpha=w)) +
+    geom_point() + scale_size(range = c(0.5,6)) + ylim(-0.5, 0.2) +
+    theme_bw() + xlab('') + ylab(expression(paste('Drift rate (m', s^-1, ')'))) +
+    facet_wrap(~ref, scales='free_x')
+}
