@@ -35,16 +35,19 @@ fitDrate <- function(data, weight='default', prefilter=0) {
   ##compile("./src/drifteR.cpp")
   ##dyn.load(dynlib("drifteR"))
 
-  if(weight=='default') {
+  if(weight[1]=='default') {
     data$wt <- data$weight
   } else {
-    nmatch <- unlist(lapply(weight, function(x) grep(x, names(data))))
-    wmat <- data[,nmatch]
-    w <- apply(wmat, 1, prod)
-    w <- w/max(w, na.rm=T)
-    data$wt <- w
+    if(length(weight)==1) {
+      data$wt <- data[,match(weight, names(data))]
+    } else {
+      nmatch <- unlist(lapply(weight, function(x) grep(x, names(data))))
+      wmat <- data[,nmatch]
+      w <- apply(wmat, 1, prod)
+      w <- w/max(w, na.rm=T)
+      data$wt <- w
+    }
   }
-
   data <- data[which(!is.na(data$DE.DATE) & !is.na(data$wt)),]
   data <- data[order(data$DE.DATE),]
   data <- data[which(is.finite(data$drate)),]
@@ -182,5 +185,78 @@ fitPlot <- function(fit, yLims=c(-0.5, 0.2),
     }
   }
   lines(fit~DE.DATE, data=fit$pred, lty=2, col=fitCol, lwd=1)
+}
+
+
+#' \code{plotGG} Create ggplot output from \code{fitDrift}
+#' @param fit Either a dataframe of dives, including variables from \code{rbs} and \code{pDrift}, or
+#' output list from the \code{fitDrift} function.
+#' @param yLims Set range of y axis
+#' @param fitCol Colour to be used for estimated drift trajectory
+#' @param fitAlpa Transparency to e used for estimated drift trajectory
+#' @param fitLwd Line width to be used for estimated mean drift trajectory
+#' @param ptSize Vector of size range of points.
+#' @param to.plotly Convert to interactive plot using \code{plotly::ggplotly}
+#' @return A plot with data and (if used on fitted model list) the fitted estimates with confidence intervals
+#' @family Drift dive functions
+#' @seealso \code{\link{rbs}} Reverse Broken Stick algorithm
+#' @seealso \code{\link{check.pDrift}} to interactively check drift dive weightings
+#' @seealso \code{\link{pDrift}} to calculate drift rate and probability weightings for drift dive detection
+#' @seealso \code{\link{fitDrate}} To fit state-space model to weighted data to estimate drift rate change over time
+#' @author Martin Biuw
+#' @examples
+#' rbs(data=dive, num=100, n.bs=4)
+#' dive <- rbs(data=dive, num=NA, n.bs=4)
+#' dive <- pDrift(dive)
+#' fit <- fitDrate(dive, prefilter=0.01)
+#' fit2 <- fitDrate(dive, weight='rRes*span*dWt', prefilter=0.01)
+#' plotGG(dive)
+#' potGG(fit)
+#' @export
+
+plotGG <- function(fit, yLims=c(-0.5, 0.2),
+                    fitCol=2, fitAlpha=0.2, fitLwd=0.5,
+                    ptSize=c(0.5, 3), to.plotly=F) {
+  require(ggplot2)
+
+  if(class(fit)=='list') {
+    dat <- fit$data
+    dat$w <- fit$w
+  } else {
+    dat <- fit
+    dat$w <- dat$weight
+  }
+
+  dp <- ggplot(dat, aes(x=DE.DATE, y=drate, size=w, alpha=w)) +
+    geom_point() +
+    scale_size(range = ptSize) +
+    ylim(yLims) +
+    theme_bw() +
+    xlab('') +
+    ylab(expression(paste('Drift rate (m', s^-1, ')')))
+
+  if(class(fit)=='list') {
+    if(to.plotly) fitAlpha <- min(c(1, 2*fitAlpha))
+
+    confCol <- as.vector(col2rgb(fitCol))/255
+    confCol <- rgb(confCol[1], confCol[2], confCol[3], fitAlpha)
+
+    for(i in unique(fit$pred$segment)) {
+      tmp <- fit$pred[which(fit$pred$segment==i),]
+      dp <- dp + geom_line(data=tmp, aes(x=DE.DATE, y=fit),
+                           colour=fitCol, size=fitLwd, show.legend=F, inherit.aes=F) +
+                geom_ribbon(data=tmp, aes(x=DE.DATE, y=fit, ymin=lwr, ymax=upr, alpha=fitAlpha),
+                           fill=confCol, show.legend=F, inherit.aes=F)
+    }
+  }
+
+  if(to.plotly) {
+    require(plotly)
+    dp$labels$y <- 'Drift rate (m/s)'
+    dpl <- ggplotly(dp)
+    dpl
+  } else {
+    dp
+  }
 }
 
