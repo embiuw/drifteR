@@ -14,7 +14,7 @@ tfClassifier <- function(data, n.bs=NA) {
     }
   } else {
     if(is.na(n.bs)) {
-      stop('no input provided to n.bbs. Please specify number of inflection points in data')
+      stop('no input provided to n.bs. Please specify number of inflection points in data')
     } else {
       if(n.bs==5) {
         dat <- strip.last(data)
