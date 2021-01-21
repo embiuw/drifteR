@@ -31,7 +31,7 @@
 #' fit2 <- fitDrate(dive, weight='rRes*span*dWt', prefilter=0.01)
 #' @export
 
-fitDrate <- function(data, weight='default', prefilter=0) {
+fitDrate <- function(data, weight='default', mixture=1, prefilter=0) {
   require(TMB)
   ##compile("./src/drifteR.cpp")
   ##dyn.load(dynlib("drifteR"))
