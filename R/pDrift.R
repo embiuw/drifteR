@@ -185,7 +185,9 @@ pDrift <- function(data=dive, depth.wpar=c(100, 30), plotit=F, keep.all=T) {
   sub$drWt <- drWt
   ## Which way should kink go?
   ##sub$weight <- sub$skew*sub$span*(1-sub$kink)*sub$rRes*sub$dWt*sub$drWt
-  sub$weight <- sub$skew*sub$span*sub$kink*sub$rRes*sub$dWt*sub$drWt
+  ##sub$weight <- sub$skew*sub$span*sub$kink*sub$rRes*sub$dWt*sub$drWt
+  ## Or perhaps not use?
+  sub$weight <- sub$skew*sub$span*sub$rRes*sub$dWt*sub$drWt
 
   sub$weight <- sub$weight/max(sub$weight[which(is.finite(sub$weight))], na.rm=T)
   sub$weight[which(!is.finite(sub$weight))] <- NA

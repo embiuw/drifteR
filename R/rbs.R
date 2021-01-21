@@ -23,6 +23,11 @@
 rbs <- function(data=dive, num=NA, n.bs=NA) {
   if(is.na(n.bs)) {
     n.bs <- data$N.DEPTHS[1]
+    if(is.na(n.bs)) {
+      n.bs <- max(unlist(lapply(data$DEPTH.STR, function(x) {
+        length(unlist(strsplit(x, ',')))
+      })))
+    }
   }
   rbfun <- function(plotit=T) {
     d <- as.numeric(data[num, match(paste0('D', c(1:n.bs)), names(data))])

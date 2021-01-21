@@ -2,6 +2,7 @@
 #' @param data Data frame with dive data output from the \code{pDrift} function.
 #' @param weight Select weightingbvariables to be used. Default is to use \code{weight} created by \code{pDrift}.
 #' See example for how to specify other weighting
+#' @param mixture Select which mixture distribution to use ('nt' for normal and t distribution, 'nn' for mixture of normals)
 #' @param prefilter Should any prefiltering be done (based on selected weight) prior to running the model.
 #' @details Takes a dive set of dive data from SRDLs (Sea Mammal Research Unit), with added variables from
 #' \code{rbs} and \code{pDrift} and fits a state-space model to change over time (using TMB).
@@ -90,6 +91,8 @@ fitDrate <- function(data, weight='default', prefilter=0) {
   }
 
   dat <- newdat
+  dat$mx <- ifelse(mixture=='nl', 1, 2)
+
   ##data$u0 <- data$slope[head(which(data$w>0.3), 1)]
   ##data$w <- rep(1, length(data$w))
   rm(newdat)

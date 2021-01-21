@@ -30,6 +30,7 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(idx);
   DATA_VECTOR(j);
   DATA_VECTOR(w);
+  DATA_SCALAR(mx);
 //  DATA_SCALAR(u0);
 
   PARAMETER(logSdProc);
@@ -47,7 +48,6 @@ Type objective_function<Type>::operator() ()
   Type p = ilogit(logitp); // logit transform mixture proportions
   Type sdProc = exp(logSdProc); // Exponential, to ensure it's positive
   Type sdObs = exp(logSdObs);  // Exponential, to ensure it's positive
-
 
   //*********************************************************//
   // Process:
@@ -73,11 +73,15 @@ Type objective_function<Type>::operator() ()
 	    Type umu = (u00*jj)+(u1*(1-(jj)));
 	    Type ww = 1-w(i);
 	    Type pp = p*ww;
-	// Mixture of normal and t:
-	//    nll += nldens(slope(i), umu, sdObs, p);
-	//    nll += nldens(slope(i), umu, sdObs, p*ww);
-	// Mixture of normals:
-	    nll -= log((1-pp)*dnorm(slope(i), umu, sdObs, false) + pp*dnorm(slope(i), Type(0), Type(0.5), false));
+	    if(mx==1) {
+	      // Mixture of normal and t:
+	      // nll += nldens(slope(i), umu, sdObs, p);
+	      nll += nldens(slope(i), umu, sdObs, p*ww);
+	    }
+	    if(mx==2) {
+	      // Mixture of normals:
+	      nll -= log((1-pp)*dnorm(slope(i), umu, sdObs, false) + pp*dnorm(slope(i), Type(0), Type(0.5), false));
+	    }
 	  }
   }
   return nll;
