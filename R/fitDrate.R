@@ -1,6 +1,6 @@
 #' \code{fitDrate} Fit state-space model to weighted drift dive record
 #' @param data Data frame with dive data output from the \code{pDrift} function.
-#' @param weight Select weightingbvariables to be used. Default is to use \code{weight} created by \code{pDrift}.
+#' @param weight Select weighting variables to be used. Default is to use \code{weight} created by \code{pDrift}.
 #' See example for how to specify other weighting
 #' @param mixture Select which mixture distribution to use ('nt' for normal and t distribution, 'nn' for mixture of normals)
 #' @param prefilter Should any prefiltering be done (based on selected weight) prior to running the model.
@@ -22,6 +22,8 @@
 #' @seealso \code{\link{check.pDrift}} to interactively check drift dive weightings
 #' @seealso \code{\link{pDrift}} to calculate drift rate and probability weightings for drift dive detection
 #' @seealso \code{\link{fitPlot}} To plot output from \code{fitDrift}
+#' @seealso \code{\link{augmentWt}} Fit state-space model to weighted drift dive record
+
 #' @author Martin Biuw
 #' @examples
 #' rbs(data=dive, num=100, n.bs=4)
